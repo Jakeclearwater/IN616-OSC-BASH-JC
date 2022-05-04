@@ -1,7 +1,7 @@
 #!/bin/bash
 
 filename=$1
-
+#enter in infomation for backup
 echo "Enter complete route of file/dir you want to backup:"
 read filename
 echo "Enter name for backup:"
@@ -17,7 +17,7 @@ read tDir
 echo "Enter Port Number:"
 read portNumber
 clear
-
+#displays infomation to users
 echo "You have entered the infomation below:"
 echo $username
 echo $tAddress
@@ -25,14 +25,14 @@ echo $tDir
 echo $portnumber
 echo $filename
 echo $backupName
-echo "Is this correct (Y) or (N)?"
+echo "Is this correct (y) or (n)? (case sensitive)"
 read confirm
-
+#begins backup
 if grep -q "y" <<< "$confirm";
 then
 	clear
 	echo "Beginning Backup..."
-
+#creates backup file
 	tar -cvf /tmp/$backupName.tar.gz -C $filename . 2> /dev/null
 
 	if [[ $? == 0 ]]
@@ -42,7 +42,7 @@ then
 		echo ">> Backup file failed. exiting..."
 		exit 1
 	fi
-
+#sends backup to folder added
         scp -P $portNumber /tmp/$filename.tar.gz $username"@"$tAddress":"$tDir
 	if [[ $? == 0 ]]
 	then
