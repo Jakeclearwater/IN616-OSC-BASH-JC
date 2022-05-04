@@ -20,14 +20,11 @@ sharedFolders(){
 createUsers() {
 
 	IFS=";"
+
 	#removes headers before reading
-	sed 1d $filename | while read col1 col2 col3 col4
+        while read Email DoB Groups Sfolder
 	do
-	   Email=$($col1)
-	   DoB=$($col2)
-	   Groups=$($col3)
-	   Sfolder=$($col4)
-	   echo "email:" $email
+	   echo "email:" $Email
 	   #create username from email
 	   email=$(echo $Email | cut -d '@' -f1)
 	   val=$(echo $email | cut -d '.' -f1)
@@ -44,7 +41,6 @@ createUsers() {
 	   echo "DoB:" $DoB
 	   echo "Groups:" $Groups
 	   echo "Sharedfolder:" $Sfolder
-	   echo "----------------------------------------"
 
 	   sudo useradd -d /home/${username} -m -s /bin/bash $username
 
@@ -54,24 +50,39 @@ createUsers() {
 
 	   if [ -z "$Groups" ];
 	   then
-			   echo "Groups is Empty"
+			   echo "User Has no Assigned Group/s"
 	   else
 			   sudo usermod -aG $Groups $username
 	   fi
-
-
+	   echo "----------------------------------------"
 
 done < $filename
+sudo userdel -r ee-mail
 }
 
 sharedFolders
 createUsers
 
 deleteFolders() {
-	rm -r /sharedFolders/staffData
-	rm -r /sharedFolders/visitorData
+	sudo rm -r /sharedFolders/staffData
+	sudo rm -r /sharedFolders/visitorData
 }
+
+deleteUsers() {
+	sudo userdel -r edijkstra
+        sudo userdel -r jmccarthy
+	sudo userdel -r atanenbaum
+	sudo userdel -r aturing
+	sudo userdel -r ltorvalds
+	sudo userdel -r bstroustroup
+	sudo userdel -r kthompson
+	sudo userdel -r jgosling
+	sudo userdel -r tberners-lee
+
+}	
 
 deleteAll() {
 	deleteFolders
+	deleteUsers
 }
+#deleteAll
