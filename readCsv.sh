@@ -20,10 +20,12 @@ sharedFolders(){
 createUsers() {
 
 	IFS=";"
-
+        index=0
 	#removes headers before reading
         while read Email DoB Groups Sfolder
 	do
+	if [ $index -gt  0 ] 
+	then
 	   echo "email:" $Email
 	   #create username from email
 	   email=$(echo $Email | cut -d '@' -f1)
@@ -55,9 +57,12 @@ createUsers() {
 			   sudo usermod -aG $Groups $username
 	   fi
 	   echo "----------------------------------------"
+	
+	fi
+	(( index++ ))
 
 done < $filename
-sudo userdel -r ee-mail
+
 }
 
 sharedFolders
@@ -85,4 +90,4 @@ deleteAll() {
 	deleteFolders
 	deleteUsers
 }
-#deleteAll
+deleteAll
