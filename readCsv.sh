@@ -1,14 +1,14 @@
 #!/bin/bash
 
 filename=$1
-if [[$filename == http* ]];
+if [[$filename == http* ]]; #checks for http file
 then
 	wget -gO users.csv $filename
 fi
 sudo touch logfile.log
 #logging is not quite working properly
 
-sharedFolders(){
+sharedFolders(){ #creates shared folders
 	sudo groupadd visitor
 	sudo groupadd staff
 
@@ -22,14 +22,14 @@ sharedFolders(){
 	sudo chmod g-rwx /home/sharedFolders/visitorData
 }
 
-createUsers() {
+createUsers() { #creates Users
 
 	IFS=";"
         index=0
 	#removes headers before reading
         while read Email DoB Groups Sfolder
 	do
-	if [ $index -gt  0 ] 
+	if [ $index -gt  0 ] #Skips first line of csv file
 	then
 	echo "User successfully created" >> logfile.log
 	   echo "email:" $Email  >> logfile.log
@@ -49,11 +49,11 @@ createUsers() {
 	   echo "DoB:" $DoB  >> logfile.log
 	   echo "Groups:" $Groups  >> logfile.log
 	   echo "Sharedfolder:" $Sfolder  >> logfile.log
-
+#creates users
 	   sudo useradd -d /home/${username} -m -s /bin/bash $username >> logfile.log
-
+#sets password
 	   echo $username:$password |sudo chpasswd
-
+#sets passwords to change on first login
 	   sudo chage --lastday 0 ${username}
 
 	   if [ -z "$Groups" ];
@@ -62,14 +62,14 @@ createUsers() {
 	   else
 			   sudo usermod -aG $Groups $username
 	   fi
-	
+	#creates aliases and then saves to file
 	   if grep -q "sudo" <<< "$Groups";
 	   then
 		   alias myls="ls -la"
 		   sudo touch ~/.bash_aliases
 		   echo alias myls="ls -la" >> ~/.bash_aliases
 	   fi
-
+#creates soft links for groups
 	   if grep -q "staffData" <<< "$Sfolder";
 	   then
 		   sudo ln -s /home/$username/sharedFolders/staffData /home/$username/shared
@@ -88,7 +88,7 @@ echo "Total Users: $index" >> logfile.log
 
 sharedFolders
 createUsers
-
+#delete stuff for testing purposes
 deleteFolders() {
 	sudo rm -r /home/sharedFolders/staffData
 	sudo rm -r /home/sharedFolders/visitorData
